@@ -12,4 +12,6 @@ const NewsSchema = new Schema({
     content: String
 });
 
-module.exports = NewsSchema;
+const News = mongoose.model('News', NewsSchema);
+
+module.exports = News;

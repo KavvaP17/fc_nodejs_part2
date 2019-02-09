@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('../utils/logger');
-const mongoose = require('mongoose');
-const NewsSchema =  require( './../models/news');
-
-const News = mongoose.model('News', NewsSchema);
+const News =  require( './../models/news');
 
 router.get('/', function (req, res, next) {
     try {
@@ -46,7 +43,7 @@ router.post('/', function (req, res, next) {
         if (!req.isAuthenticated()) {
             throw new Error('unauthenticated user');
         }
-        
+
         News.create(req.body)
             .then(() => {
                 logger.info(`News added successfully`);

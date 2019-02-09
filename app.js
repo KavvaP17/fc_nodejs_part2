@@ -3,11 +3,12 @@ const mongoose = require('mongoose');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const createError = require('http-errors');
+const logger = require('./utils/logger');
+const passport = require('./middlewares/passport');
 
 const indexRouter = require('./routes/index');
 const newsRouter = require('./routes/news');
-const logger = require('./utils/logger');
-const passport = require('./middlewares/passport');
+const authRouter = require('./routes/auth');
 
 const app = express();
 mongoose.connect('mongodb://localhost:27017/news', { useNewUrlParser: true })
@@ -31,13 +32,7 @@ mongoose.connect('mongodb://localhost:27017/news', { useNewUrlParser: true })
 
         app.use('/', indexRouter);
         app.use('/news', newsRouter);
-        app.get('/login/facebook', passport.authenticate('facebook'));
-
-        app.get('/return', 
-            passport.authenticate('facebook', { failureRedirect: '/login' }),
-            function(req, res) {
-                res.redirect('/');
-        });
+        app.use('/auth', authRouter);
 
         // catch 404 and forward to error handler
         app.use(function (req, res, next) {
