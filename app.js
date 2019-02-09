@@ -7,6 +7,7 @@ const createError = require('http-errors');
 const indexRouter = require('./routes/index');
 const newsRouter = require('./routes/news');
 const logger = require('./utils/logger');
+const passport = require('./middlewares/passport');
 
 const app = express();
 mongoose.connect('mongodb://localhost:27017/news', { useNewUrlParser: true })
@@ -20,10 +21,23 @@ mongoose.connect('mongodb://localhost:27017/news', { useNewUrlParser: true })
         app.use(express.json());
         app.use(express.urlencoded({ extended: false }));
         app.use(cookieParser());
+        app.use(require('body-parser').urlencoded({ extended: true }));
         app.use(express.static(path.join(__dirname, 'public')));
+
+        app.use(require('express-session')({ secret: 'secret', resave: true, saveUninitialized: true }));
+
+        app.use(passport.initialize());
+        app.use(passport.session());
 
         app.use('/', indexRouter);
         app.use('/news', newsRouter);
+        app.get('/login/facebook', passport.authenticate('facebook'));
+
+        app.get('/return', 
+            passport.authenticate('facebook', { failureRedirect: '/login' }),
+            function(req, res) {
+                res.redirect('/');
+        });
 
         // catch 404 and forward to error handler
         app.use(function (req, res, next) {

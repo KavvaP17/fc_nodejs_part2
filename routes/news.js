@@ -42,6 +42,11 @@ router.get('/:id', function (req, res, next) {
 router.post('/', function (req, res, next) {
     try {
         logger.info(`POST news/`);
+
+        if (!req.isAuthenticated()) {
+            throw new Error('unauthenticated user');
+        }
+        
         News.create(req.body)
             .then(() => {
                 logger.info(`News added successfully`);
@@ -59,6 +64,11 @@ router.post('/', function (req, res, next) {
 router.put('/:id', function (req, res, next) {
     try {
         logger.info(`PUT news/${req.params.id}`);
+
+        if (!req.isAuthenticated()) {
+            throw new Error('unauthenticated user');
+        }
+
         News.findByIdAndUpdate(req.params.id, req.body)
             .then(() => {
                 logger.info(`News updated successfully`);
@@ -75,7 +85,12 @@ router.put('/:id', function (req, res, next) {
 
 router.delete('/:id', function (req, res, next) {
     try {
-        logger.info(`DELETE news/${req.params.id}`)
+        logger.info(`DELETE news/${req.params.id}`);
+
+        if (!req.isAuthenticated()) {
+            throw new Error('unauthenticated user');
+        }
+
         News.findByIdAndRemove(req.params.id)
             .then(() => {
                 logger.info(`News deleted successfully`);
